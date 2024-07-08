@@ -262,7 +262,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements IFastPla
                     setSprinting(true);
 
                 } else if (slideCooldown == 0 && fastmove_hasStamina(conf.slideStaminaCost(), false)  && conf.slideEnabled() && fastmove_lastSprintingState
-                                        && fastmove_isValidForMovement(false, false) ) {
+                                        && fastmove_isValidForMovement(false, false) && isOnGround()) {
                     slideCooldown = conf.slideCoolDown();
                     fastmove_useStamina(conf.slideStaminaCost(),false);
                     moveState = MoveState.SLIDING;
