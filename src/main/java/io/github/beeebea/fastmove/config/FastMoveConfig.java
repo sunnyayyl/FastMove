@@ -19,7 +19,7 @@ public class FastMoveConfig {
     @Sync(Option.SyncMode.OVERRIDE_CLIENT)
     public boolean diveRollEnabled = true;
     @Sync(Option.SyncMode.OVERRIDE_CLIENT)
-    public int diveRollStaminaCost = 50;
+    public int diveRollStaminaCost = 20;
     @Sync(Option.SyncMode.OVERRIDE_CLIENT)
     public double diveRollSpeedBoostMultiplier = 1;
     @Sync(Option.SyncMode.OVERRIDE_CLIENT)

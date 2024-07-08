@@ -5,6 +5,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -86,6 +87,12 @@ public class FastMove implements ModInitializer {
                 }
             });
         }
+    }
+    public static boolean UseCombatRoll(){
+        return FabricLoader.getInstance().isModLoaded("combatroll");
+    }
+    public static boolean UseParaglider(){
+        return FabricLoader.getInstance().isModLoaded("paraglider");
     }
 
 }

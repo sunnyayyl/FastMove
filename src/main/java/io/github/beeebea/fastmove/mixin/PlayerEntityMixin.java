@@ -3,6 +3,9 @@ package io.github.beeebea.fastmove.mixin;
 import io.github.beeebea.fastmove.FastMove;
 import io.github.beeebea.fastmove.IFastPlayer;
 import io.github.beeebea.fastmove.MoveState;
+import io.github.beeebea.fastmove.compat.CombatRollCompat;
+import io.github.beeebea.fastmove.compat.ParagliderCompat;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DeathMessageType;
@@ -249,18 +252,19 @@ public abstract class PlayerEntityMixin extends LivingEntity implements IFastPla
         if(FastMove.INPUT.ismoveDownKeyPressed()){
             if(!FastMove.INPUT.ismoveDownKeyPressedLastTick()) {
                 var conf = FastMove.getConfig();
-                if (diveCooldown == 0 && conf.diveRollEnabled() && !isOnGround()
+                if (diveCooldown == 0 && fastmove_hasStamina(conf.diveRollStaminaCost(), true) && conf.diveRollEnabled() && !isOnGround()
                                         && getVelocity().multiply(1, 0, 1).lengthSquared() > 0.05
                                         && fastmove_isValidForMovement(conf.diveRollWhenSwimming(), conf.diveRollWhenFlying())) {
                     diveCooldown = conf.diveRollCoolDown();
-                    hungerManager.addExhaustion(conf.diveRollStaminaCost());
+                    fastmove_useStamina(conf.diveRollStaminaCost(),true);
                     moveState = MoveState.ROLLING;
                     bonusVelocity = fastmove_movementInputToVelocity(new Vec3d(0, 0, 1), 0.1f * conf.diveRollSpeedBoostMultiplier(), getYaw());
                     setSprinting(true);
-                } else if (slideCooldown == 0 && conf.slideEnabled() && fastmove_lastSprintingState
+
+                } else if (slideCooldown == 0 && fastmove_hasStamina(conf.slideStaminaCost(), false)  && conf.slideEnabled() && fastmove_lastSprintingState
                                         && fastmove_isValidForMovement(false, false) ) {
                     slideCooldown = conf.slideCoolDown();
-                    hungerManager.addExhaustion(conf.slideStaminaCost());
+                    fastmove_useStamina(conf.slideStaminaCost(),false);
                     moveState = MoveState.SLIDING;
                     bonusVelocity = fastmove_movementInputToVelocity(new Vec3d(0,0,1), 0.2f * conf.slideSpeedBoostMultiplier(), getYaw());
                     setSprinting(true);
@@ -301,6 +305,30 @@ public abstract class PlayerEntityMixin extends LivingEntity implements IFastPla
         if(source.getType().deathMessageType() == DeathMessageType.FALL_VARIANTS && moveState == MoveState.ROLLING){
             cir.setReturnValue(false);
             cir.cancel();
+        }
+    }
+
+    private void fastmove_useStamina(int amount, boolean isRoll){
+        if(FabricLoader.getInstance().isModLoaded("paraglider")){
+            ParagliderCompat.useParagliderStamina(amount);
+        }
+        else if(isRoll && FabricLoader.getInstance().isModLoaded("combatroll")){
+            CombatRollCompat.useCombatRollStamina();
+        }
+        else{
+           hungerManager.addExhaustion(amount);
+        }
+
+    }
+    private boolean fastmove_hasStamina(int amount, boolean isRoll){
+        if(FabricLoader.getInstance().isModLoaded("paraglider")){
+            return ParagliderCompat.hasParagliderStamina();
+        }
+        else if(isRoll && FabricLoader.getInstance().isModLoaded("combatroll")){
+            return CombatRollCompat.hasCombatRollStamina();
+        }
+        else{
+            return hungerManager.getFoodLevel() > 0;
         }
     }
 }
