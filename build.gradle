@@ -19,11 +19,11 @@ repositories {
         url 'https://maven.kosmx.dev/'
     }
     maven {
-        url "https://maven.uku3lig.net/releases"
+        url 'https://maven.wispforest.io/releases/'
     }
-
     //for testing config screen
     maven { url "https://maven.terraformersmc.com/releases/" }
+
 }
 
 dependencies {
@@ -42,9 +42,9 @@ dependencies {
     //You might want bendy-lib. playerAnimator will wrap it.
     modRuntimeOnly("io.github.kosmx.bendy-lib:bendy-lib-fabric:${project.bendylib_version}")
 
-    modApi "net.uku3lig:ukulib:${project.ukulib_version}"
-
-    include "net.uku3lig:ukulib:${project.ukulib_version}"
+    annotationProcessor modImplementation("io.wispforest:owo-lib:${project.owo_version}")
+    include "io.wispforest:owo-sentinel:${project.owo_version}"
+    modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 }
 
 processResources {

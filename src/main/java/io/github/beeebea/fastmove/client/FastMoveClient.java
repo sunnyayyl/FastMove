@@ -6,6 +6,7 @@ import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.Ease;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import io.github.beeebea.fastmove.*;
+import io.github.beeebea.fastmove.config.FMConfig;
 import io.github.beeebea.fastmove.config.FastMoveConfig;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -14,12 +15,10 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import net.uku3lig.ukulib.config.ConfigManager;
 import java.util.Map;
 
 public class FastMoveClient extends FastMove implements ClientModInitializer {
     private static final Map<String, KeyframeAnimation> _animations = new java.util.HashMap<>();
-    public static final ConfigManager<FastMoveConfig> CONFIG_MANAGER = ConfigManager.createDefault(FastMoveConfig.class, FastMove.MOD_ID);
 
     @Override
     public void onInitializeClient() {
@@ -75,9 +74,6 @@ public class FastMoveClient extends FastMove implements ClientModInitializer {
                 animationContainer.replaceAnimationWithFade(fade, new KeyframeAnimationPlayer(anim));
             }
         };
-
-        CONFIG = CONFIG_MANAGER::getConfig;
-
         //register receivers
         ClientPlayNetworking.registerGlobalReceiver(FastMove.MOVE_STATE, (client, handler, buf, responseSender) -> {
             if (client.world != null) {
@@ -88,29 +84,6 @@ public class FastMoveClient extends FastMove implements ClientModInitializer {
                 if (fastPlayer != null) fastPlayer.fastmove_setMoveState(moveState);
             }
         });
-
-        //Set config on join
-        ClientPlayNetworking.registerGlobalReceiver(FastMove.CONFIG_STATE, (client, handler, buf, responseSender) -> {
-            serverConfig = new FastMoveConfig();
-            serverConfig.enableFastMove = buf.readBoolean();
-            serverConfig.diveRollEnabled = buf.readBoolean();
-            serverConfig.diveRollStaminaCost = buf.readInt();
-            serverConfig.diveRollSpeedBoostMultiplier = buf.readDouble();
-            serverConfig.diveRollCoolDown = buf.readInt();
-            serverConfig.diveRollWhenSwimming = buf.readBoolean();
-            serverConfig.diveRollWhenFlying = buf.readBoolean();
-            serverConfig.wallRunEnabled = buf.readBoolean();
-            serverConfig.wallRunStaminaCost = buf.readInt();
-            serverConfig.wallRunSpeedBoostMultiplier = buf.readDouble();
-            serverConfig.wallRunDurationTicks = buf.readInt();
-            serverConfig.slideEnabled = buf.readBoolean();
-            serverConfig.slideStaminaCost = buf.readInt();
-            serverConfig.slideSpeedBoostMultiplier = buf.readDouble();
-            serverConfig.slideCoolDown = buf.readInt();
-            LOGGER.info("Got config from server");
-        });
-
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> serverConfig = null);
 
     }
 
