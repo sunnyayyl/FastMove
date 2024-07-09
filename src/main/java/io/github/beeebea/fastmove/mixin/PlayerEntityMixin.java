@@ -191,6 +191,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements IFastPla
         return !isSpectator() && (canElytra || !isFallFlying()) && (canSwim || !isTouchingWater()) && !isClimbing() && !abilities.flying;
     }
 
+
     @Inject(method = "getDimensions", at = @At("HEAD"), cancellable = true)
     public void fastmove_getDimensions(EntityPose pose, CallbackInfoReturnable<EntityDimensions> cir) {
         var moveState = fastmove_getMoveState();
