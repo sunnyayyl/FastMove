@@ -46,5 +46,10 @@ public class FastMoveConfig {
     public double slideSpeedBoostMultiplier = 1;
     @Sync(Option.SyncMode.OVERRIDE_CLIENT)
     public int slideCoolDown = 0;
+    @SectionHeader("compat")
+    @Sync(Option.SyncMode.OVERRIDE_CLIENT)
+    public boolean useCombatRoll = true;
+    @Sync(Option.SyncMode.OVERRIDE_CLIENT)
+    public boolean useParaglider = true;
 
 }

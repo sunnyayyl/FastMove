@@ -23,6 +23,11 @@
   "text.config.fastmove.option.wallRunCoolDown" : "Cooldown (Ticks)",
   "text.config.fastmove.option.wallRunDurationTicks" : "Duration (Ticks)",
 
+
+  "text.config.fastmove.section.compat" : "Mod Compatibility",
+  "text.config.fastmove.option.useCombatRoll" : "Use CombatRoll Mod Stamina",
+  "text.config.fastmove.option.useParaglider" : "Use Paraglider Mod Stamina",
+
   "key.fastmove.up" : "FastMove Up",
   "key.fastmove.down" : "FastMove Down"
 }

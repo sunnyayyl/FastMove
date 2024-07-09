@@ -310,10 +310,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements IFastPla
     }
 
     private void fastmove_useStamina(int amount, boolean isRoll){
-        if(FabricLoader.getInstance().isModLoaded("paraglider")){
+        var conf = FastMove.getConfig();
+        if(FabricLoader.getInstance().isModLoaded("paraglider") && conf.useParaglider()){
             ParagliderCompat.useParagliderStamina(amount);
         }
-        else if(isRoll && FabricLoader.getInstance().isModLoaded("combatroll")){
+        else if(isRoll && FabricLoader.getInstance().isModLoaded("combatroll") && conf.useCombatRoll()){
             CombatRollCompat.useCombatRollStamina();
         }
         else{
@@ -322,10 +323,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements IFastPla
 
     }
     private boolean fastmove_hasStamina(int amount, boolean isRoll){
-        if(FabricLoader.getInstance().isModLoaded("paraglider")){
+        var conf = FastMove.getConfig();
+        if(FabricLoader.getInstance().isModLoaded("paraglider") && conf.useParaglider()){
             return ParagliderCompat.hasParagliderStamina();
         }
-        else if(isRoll && FabricLoader.getInstance().isModLoaded("combatroll")){
+        else if(isRoll && FabricLoader.getInstance().isModLoaded("combatroll") && conf.useCombatRoll()){
             return CombatRollCompat.hasCombatRollStamina();
         }
         else{
