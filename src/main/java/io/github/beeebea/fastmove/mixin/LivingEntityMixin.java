@@ -21,6 +21,7 @@ public class LivingEntityMixin {
                 var moveState = fastPlayer.fastmove_getMoveState();
                 if (moveState == MoveState.WALLRUNNING_LEFT || moveState == MoveState.WALLRUNNING_RIGHT){
                     cir.setReturnValue(false);
+                    cir.cancel();
                 }
             }
         }
