@@ -7,12 +7,25 @@ import dev.kosmx.playerAnim.core.util.Ease;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import io.github.beeebea.fastmove.*;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.profiler.Profiler;
+
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 public class FastMoveClient extends FastMove implements ClientModInitializer {
     private static final Map<String, KeyframeAnimation> _animations = new java.util.HashMap<>();
@@ -43,16 +56,7 @@ public class FastMoveClient extends FastMove implements ClientModInitializer {
                 //LOGGER.info("found animationContainers");
 
                 if(_animations.isEmpty()){
-                    //LOGGER.info("loading animations");
-                    for(var entry : MoveState.STATES.values()){
-                        //LOGGER.info("trying animation: " + entry.name);
-                        var name = entry.name;
-                        if(name.equals("none")) continue;
-                        KeyframeAnimation animation = PlayerAnimationRegistry.getAnimation(new Identifier(MOD_ID, entry.name));
-                        if(animation == null) continue;
-                        //LOGGER.info("found animation: " + entry.name);
-                        _animations.put(entry.name, animation);
-                    }
+                    UpdateAnimations();
                 }
 
                 var fade = AbstractFadeModifier.standardFadeIn(10, Ease.INOUTQUAD);
@@ -82,6 +86,31 @@ public class FastMoveClient extends FastMove implements ClientModInitializer {
             }
         });
 
+
+        ResourceManagerHelper.registerBuiltinResourcePack(new Identifier("alt_slide_animation"), FabricLoader.getInstance().getModContainer(MOD_ID).orElseThrow(), ResourcePackActivationType.NORMAL);
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
+            @Override
+            public void reload(ResourceManager manager) {
+                UpdateAnimations();
+            }
+
+            @Override
+            public Identifier getFabricId() {
+                return new Identifier(MOD_ID, "reload_animations");
+            }
+        });
+    }
+
+    public static void UpdateAnimations(){
+        for(var entry : MoveState.STATES.values()){
+            //LOGGER.info("trying animation: " + entry.name);
+            var name = entry.name;
+            if(name.equals("none")) continue;
+            KeyframeAnimation animation = PlayerAnimationRegistry.getAnimation(new Identifier(MOD_ID, entry.name));
+            if(animation == null) continue;
+            //LOGGER.info("found animation: " + entry.name);
+            _animations.put(entry.name, animation);
+        }
     }
 
 }
